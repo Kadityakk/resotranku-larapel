@@ -20,9 +20,12 @@ class ItemFactory extends Factory
         return [
             'name'=> $this->faker->name(),
             'category_id' => $this->faker->numberBetween(1,2),
-            'price' => $this->faker->numberBetween(2, 1000, 100000),
+            'price' => $this->faker->numberBetween(5000, 100000),
             'description' => $this->faker->text(),
-            'img' => $this->faker->imageUrl(),
+            'img' => fake()->randomElement([
+            'https://images.unsplash.com/photo-1569718212165-3a8278d5f624',
+            'https://images.unsplash.com/photo-1579871494447-9811cf80d66c',
+            'https://images.unsplash.com/photo-1534256958597-7fe685cbd745',]),
             'is_active' => $this->faker->boolean(),
         ];
     }
