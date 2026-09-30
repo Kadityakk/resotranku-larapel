@@ -29,6 +29,7 @@
 
                             @php
                                $subtotal = 0; 
+                               $total = $subTotal + $tax;
                             @endphp
                             
                             @foreach ($cart as $item)

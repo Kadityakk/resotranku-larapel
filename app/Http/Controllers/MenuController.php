@@ -43,7 +43,7 @@ class MenuController extends Controller
 
         // Jika keranjang belum ada, buat keranjang baru
         if (isset($cart[$menuId])) {
-            $cart[$menuId]['quantity']+= 1;
+            $cart[$menuId]['qty']+= 1;
         } else {
             $cart[$menuId] = [
                 'id' => $menu->id,

@@ -28,7 +28,7 @@
                                                 <p class="text-limited">{{$item->description}}</p>
                                                 <div class="d-flex justify-content-between flex-lg-wrap">
                                                     <p class="text-dark fs-5 fw-bold mb-0">{{'Rp'. number_format($item->price, 0, ',', '.')}}</p>
-                                                    <a href="#" onclick="addToCart({{ $item->id}})" class="btn border border-secondary rounded-pill px-3 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Tambah Keranjang</a>
+                                                    <a href="" onclick="addToCart({{ $item->id}})" class="btn border border-secondary rounded-pill px-3 text-primary"><i class="fa fa-shopping-bag me-2 text-primary"></i> Tambah Keranjang</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -45,13 +45,14 @@
 
 @section('scripts')
 <script>
-    function addTocart(menuId) {
+    // add cart masih error
+    function addToCart(menuId) {
         fetch("{{ route('cart.add')}}", {
-            method: 'POST',,
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
+            },
             body: JSON.stringify({ id: menuId})
         })
         .then(response => response.json())
@@ -62,6 +63,7 @@
             console.error('Error:', error);
         })
     }
+
 
 
 
