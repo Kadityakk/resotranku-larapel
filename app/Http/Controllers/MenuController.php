@@ -79,7 +79,7 @@ class MenuController extends Controller
         if (isset($cart[$itemId])) {
             $cart[$itemId]['qty'] = $newQty;
             Session::put('cart', $cart);
-            Session::flash('success', 'berhasil diperbarui.');
+            Session::flash('success', 'Keranjangberhasil diperbarui.');
 
             return response()->json(['success' => true]);
         }
