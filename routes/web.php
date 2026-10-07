@@ -19,6 +19,4 @@ Route::post('/cart/remove', [MenuController::class, 'removeFromCart'])->name('ca
 
 Route::get('/cart/clear', [MenuController::class, 'clearCart'])->name('cart.clear');
 
-Route::get('/checkout', function () {
-    return view('customer.checkout');
-})->name('checkout');
+Route::get('/checkout', [MenuController::class, 'checkout'])->name('checkout'); //07:13
