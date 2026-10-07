@@ -76,6 +76,16 @@
                             </tr>
                         </tbody>
                     </table>
+
+                    @php
+                        $tax = $subtotal * 0.1;
+                        $total = $subtotal + $tax;
+                    @endphp
+
+                    <div class="d-flex justify-content-end">
+                        <a href="{{route('cart.clear')}}" class="btn border-secondary py-3 text-primary text-uppercase mb-4" type="button" onclick=" return confirm('Apakah anda yakin ingin mengosongkan keranjang?')">Kosongkan Keranjang</a>
+                    </div>
+
                 </div>
                 <div class="row g-4 justify-content-end mt-1">
                     <div class="col-8"></div>
@@ -137,7 +147,7 @@
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
-            body: JSON.stringify({ id: itemId, qty: newQty })
+            body: JSON.stringify({ id: itemId})
         })
 
         .then(response => response.json())
@@ -152,5 +162,30 @@
         })
 
     }
+
+    function removeItemFromCart(itemId) {
+        fetch("{{route('cart.remove')}}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ id: itemId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alet(data.message);
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat menghapus item dari keranjang.');
+        })
+    }
+
+
 </script>
 @endsection
