@@ -67,6 +67,10 @@
         });
     }
 
+    /**
+     * Writes the new cart count onto the navbar badge and replays the pop
+     * animation, so adding an item is visibly acknowledged.
+     */
     function updateBadge(quantity) {
         var badge = document.getElementById('cart-badge');
 
@@ -74,8 +78,18 @@
             return;
         }
 
+        var changed = String(badge.textContent).trim() !== String(quantity);
+
         badge.textContent = quantity;
         badge.classList.toggle('d-none', !quantity);
+
+        if (!quantity || !changed) {
+            return;
+        }
+
+        badge.classList.remove('is-bumped');
+        void badge.offsetWidth; // reflow, so the animation restarts every time
+        badge.classList.add('is-bumped');
     }
 
     function updateSummary(totals) {
@@ -145,9 +159,19 @@
         }
     }
 
+    /**
+     * A button may name a quantity input via data-qty-source; the menu cards do
+     * not, and querySelector('') would throw, so only look it up when it is set.
+     */
+    function quantityFrom(button) {
+        var selector = button.getAttribute('data-qty-source');
+        var field = selector ? document.querySelector(selector) : null;
+
+        return field ? parseInt(field.value, 10) || 1 : 1;
+    }
+
     function handleAdd(button) {
-        var quantityField = document.querySelector(button.getAttribute('data-qty-source') || '');
-        var quantity = quantityField ? parseInt(quantityField.value, 10) || 1 : 1;
+        var quantity = quantityFrom(button);
 
         setBusy(button, true);
 

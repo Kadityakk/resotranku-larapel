@@ -1,0 +1,132 @@
+/**
+ * Restoranku customer overrides, layered on top of the purchased template's
+ * style.css. Kept out of the Blade templates so markup stays free of CSS.
+ */
+
+/* Menu cards ----------------------------------------------------------- */
+
+.text-limited {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.fruite-img {
+    height: 220px;
+    overflow: hidden;
+}
+
+.fruite-img img {
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Bootstrap 5.2+ utilities, backfilled ---------------------------------- */
+
+/**
+ * The customer template ships Bootstrap 5.0, which predates the .text-bg-*
+ * utilities. Without them .badge renders white text on no background, which is
+ * invisible against the white navbar. Text colours follow Bootstrap's own
+ * contrast rule rather than a blanket white: this theme's primary (#81C408) and
+ * secondary (#FFB524) are light, so they take dark text.
+ */
+.text-bg-primary {
+    color: #212529 !important;
+    background-color: var(--bs-primary, #81c408) !important;
+}
+
+.text-bg-secondary {
+    color: #212529 !important;
+    background-color: var(--bs-secondary, #ffb524) !important;
+}
+
+.text-bg-success {
+    color: #fff !important;
+    background-color: var(--bs-success, #198754) !important;
+}
+
+.text-bg-danger {
+    color: #fff !important;
+    background-color: var(--bs-danger, #dc3545) !important;
+}
+
+.text-bg-warning {
+    color: #212529 !important;
+    background-color: var(--bs-warning, #ffc107) !important;
+}
+
+.text-bg-info {
+    color: #212529 !important;
+    background-color: var(--bs-info, #0dcaf0) !important;
+}
+
+.text-bg-light {
+    color: #212529 !important;
+    background-color: var(--bs-light, #f4f6f8) !important;
+}
+
+.text-bg-dark {
+    color: #fff !important;
+    background-color: var(--bs-dark, #45595b) !important;
+}
+
+/* Cart badge ----------------------------------------------------------- */
+
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -12px;
+    min-width: 20px;
+    font-size: .7rem;
+    line-height: 1.1;
+    padding: .3em .45em;
+    box-shadow: 0 0 0 2px #fff;
+}
+
+/**
+ * cart.js adds .is-bumped whenever the count changes, so adding an item reads
+ * as a notification rather than a silent number swap.
+ */
+@keyframes rk-badge-pop {
+    0% {
+        transform: scale(1);
+    }
+
+    35% {
+        transform: scale(1.55);
+    }
+
+    70% {
+        transform: scale(.92);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.cart-badge.is-bumped {
+    animation: rk-badge-pop .45s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cart-badge.is-bumped {
+        animation: none;
+    }
+}
+
+/* Toast stack ---------------------------------------------------------- */
+
+.toast-stack {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    z-index: 2000;
+    max-width: min(22rem, calc(100vw - 2.5rem));
+}
+
+.toast-stack .alert {
+    box-shadow: 0 .5rem 1.25rem rgba(16, 24, 40, .15);
+}

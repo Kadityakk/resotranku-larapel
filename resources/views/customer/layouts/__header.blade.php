@@ -28,39 +28,8 @@
         <!-- Template Stylesheet -->
         <link href="{{ asset('assets/customer/css/style.css') }}" rel="stylesheet">
 
-        <style>
-            .text-limited {
-                display: -webkit-box;
-                -webkit-line-clamp: 2;
-                -webkit-box-orient: vertical;
-                overflow: hidden;
-            }
-
-            .cart-badge {
-                position: absolute;
-                top: -8px;
-                right: -12px;
-                min-width: 20px;
-                font-size: .7rem;
-            }
-
-            .fruite-img {
-                height: 220px;
-                overflow: hidden;
-            }
-
-            .fruite-img img {
-                height: 100%;
-                object-fit: cover;
-            }
-
-            .toast-stack {
-                position: fixed;
-                top: 90px;
-                right: 20px;
-                z-index: 2000;
-            }
-        </style>
+        <!-- Restoranku Stylesheet -->
+        <link href="{{ asset('assets/customer/css/custom.css') }}" rel="stylesheet">
 
         @stack('styles')
     </head>

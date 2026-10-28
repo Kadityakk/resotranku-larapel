@@ -12,6 +12,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
+/**
+ * Scopes declared with #[Scope] receive their $query argument from Eloquent, so
+ * they are advertised here for static analysis and editor completion.
+ *
+ * @method static Builder<static> named(RoleName $role)
+ */
 class Role extends Model
 {
     /** @use HasFactory<RoleFactory> */

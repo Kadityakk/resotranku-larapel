@@ -225,9 +225,13 @@ body.rk-admin {
     --bs-btn-active-border-color: var(--rk-primary-dark);
 }
 
+/**
+ * The brand green is light enough that white text on it only reaches 2.1:1.
+ * Dark text reaches 9.9:1, and matches what the customer pages render.
+ */
 .text-bg-primary {
     background-color: var(--rk-primary) !important;
-    color: #fff !important;
+    color: #212529 !important;
 }
 
 .text-primary {
