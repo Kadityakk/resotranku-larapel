@@ -247,6 +247,18 @@
             return;
         }
 
+        // Menu card stepper: only adjusts the local field, the cart is untouched
+        // until "Tambah Keranjang" reads it through data-qty-source.
+        var qtyStep = event.target.closest('[data-qty-step]');
+
+        if (qtyStep) {
+            event.preventDefault();
+            var field = qtyStep.parentElement.querySelector('input');
+            var next = (parseInt(field.value, 10) || 1) + parseInt(qtyStep.getAttribute('data-qty-step'), 10);
+            field.value = Math.min(99, Math.max(1, next));
+            return;
+        }
+
         var step = event.target.closest('[data-cart-step]');
 
         if (step) {

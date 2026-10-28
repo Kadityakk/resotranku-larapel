@@ -40,7 +40,9 @@ class MenuController extends Controller
 
         return view('customer.menu', [
             'items' => $items,
-            'categories' => Category::orderBy('cat_name')->get(),
+            'categories' => Category::withCount(['items' => fn ($query) => $query->active()])
+                ->orderBy('cat_name')
+                ->get(),
             'activeCategory' => $request->integer('category') ?: null,
             'search' => $request->string('q')->value(),
             'tableNumber' => $this->cart->tableNumber(),

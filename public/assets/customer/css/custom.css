@@ -1,45 +1,637 @@
 /**
  * Restoranku customer overrides, layered on top of the purchased template's
  * style.css. Kept out of the Blade templates so markup stays free of CSS.
+ *
+ * The look is a warm cream page, deep green ink and a yellow accent. The
+ * template's Bootstrap 5.0 build hard-codes its own green, so the utilities the
+ * customer pages lean on are re-pointed at the palette below.
  */
+
+:root {
+    --rk-cream: #fcf6ea;
+    --rk-card: #ece8df;
+    --rk-card-hover: #e6e1d6;
+    --rk-green: #0f3d2e;
+    --rk-green-soft: #1b5641;
+    --rk-yellow: #f6c544;
+    --rk-ink: #1d2b24;
+    --rk-muted: #6b6f68;
+    --rk-line: rgba(15, 61, 46, .22);
+    --rk-radius: 18px;
+
+    --bs-primary: var(--rk-green);
+    --bs-secondary: var(--rk-yellow);
+    --bs-light: var(--rk-card);
+    --bs-dark: var(--rk-green);
+}
+
+/* Base ------------------------------------------------------------------ */
+
+body {
+    font-family: 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--rk-cream);
+    color: var(--rk-ink);
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+.display-6 {
+    font-family: 'Outfit', system-ui, sans-serif;
+    font-weight: 700;
+    color: var(--rk-green);
+}
+
+a {
+    color: var(--rk-green);
+}
+
+a:hover {
+    color: var(--rk-green-soft);
+}
+
+#spinner {
+    background-color: var(--rk-cream);
+}
+
+.text-primary {
+    color: var(--rk-green) !important;
+}
+
+.bg-light {
+    background-color: var(--rk-card) !important;
+}
+
+.rounded {
+    border-radius: var(--rk-radius) !important;
+}
+
+/* Buttons ---------------------------------------------------------------- */
+
+.btn {
+    font-weight: 600;
+    border-radius: 999px;
+    transition: background-color .2s, color .2s, border-color .2s, transform .2s;
+}
+
+.btn-primary,
+.btn-primary:focus {
+    color: #fff !important;
+    background-color: var(--rk-green);
+    border-color: var(--rk-green);
+}
+
+.btn-primary:hover,
+.btn-primary:active {
+    color: #fff !important;
+    background-color: var(--rk-green-soft);
+    border-color: var(--rk-green-soft);
+}
+
+.btn.border-secondary,
+.btn-outline-secondary {
+    color: var(--rk-green);
+    background-color: transparent;
+    border: 1.5px solid var(--rk-green) !important;
+}
+
+.btn.border-secondary:hover,
+.btn-outline-secondary:hover {
+    color: #fff !important;
+    background-color: var(--rk-green);
+}
+
+.btn.border-secondary:hover .text-primary {
+    color: #fff !important;
+}
+
+.btn-link {
+    color: var(--rk-green);
+}
+
+.back-to-top {
+    border: 0;
+}
+
+/* Forms, tables, alerts ------------------------------------------------ */
+
+.form-control,
+.form-select {
+    background-color: #fffdf8;
+    border: 1.5px solid var(--rk-line);
+    border-radius: 12px;
+    padding: .65rem .9rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--rk-green);
+    box-shadow: 0 0 0 .2rem rgba(15, 61, 46, .12);
+}
+
+.form-check-input:checked {
+    background-color: var(--rk-green);
+    border-color: var(--rk-green);
+}
+
+.form-check.border {
+    background-color: #fffdf8;
+    border-color: var(--rk-line) !important;
+    border-radius: 14px !important;
+}
+
+.table {
+    --bs-table-bg: transparent;
+    color: var(--rk-ink);
+}
+
+.table > :not(caption) > * > * {
+    border-bottom-color: var(--rk-line);
+    padding-top: .9rem;
+    padding-bottom: .9rem;
+}
+
+.table thead th {
+    color: var(--rk-muted);
+    font-weight: 500;
+    font-size: .9rem;
+}
+
+.alert {
+    border-radius: 14px;
+    border: 0;
+}
+
+.border-top,
+.border-bottom {
+    border-color: var(--rk-line) !important;
+}
+
+/* Navbar ------------------------------------------------------------------ */
+
+.rk-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    background-color: rgba(252, 246, 234, .92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.rk-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    color: var(--rk-green);
+}
+
+.rk-brand i {
+    color: var(--rk-yellow);
+    font-size: 1rem;
+}
+
+.rk-brand--light {
+    color: #fff;
+}
+
+.rk-nav .nav-link {
+    position: relative;
+    color: var(--rk-ink) !important;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: .5rem 0 !important;
+}
+
+.rk-nav .nav-link.active::after,
+.rk-nav .nav-link:hover::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    border-radius: 2px;
+    background-color: var(--rk-yellow);
+}
+
+.rk-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border: 1.5px solid var(--rk-green);
+    border-radius: 50%;
+    color: var(--rk-green);
+}
+
+.rk-icon-btn:hover {
+    color: #fff;
+    background-color: var(--rk-green);
+}
+
+.rk-table-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: .35rem .85rem;
+    border-radius: 999px;
+    background-color: var(--rk-card);
+    color: var(--rk-green);
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+/* Page heading -------------------------------------------------------- */
+
+.rk-page-head {
+    position: relative;
+    overflow: hidden;
+    padding: 2.5rem 0 2rem;
+}
+
+.rk-page-title {
+    margin: 0;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -.03em;
+    line-height: 1.05;
+    color: var(--rk-green);
+}
+
+.rk-page-title__lead {
+    color: var(--rk-yellow);
+}
+
+.rk-page-subtitle {
+    margin-top: .5rem;
+    color: var(--rk-muted);
+}
+
+.rk-page-head__art {
+    position: absolute;
+    right: 6%;
+    top: 0;
+    width: min(380px, 45vw);
+    fill: none;
+    stroke: var(--rk-green);
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    opacity: .14;
+    pointer-events: none;
+}
+
+/* Category chips and search -------------------------------------------- */
+
+.rk-chip {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: .2rem;
+    padding: .55rem 1.3rem;
+    border-radius: 999px;
+    background-color: var(--rk-card);
+    color: var(--rk-ink);
+    font-size: .92rem;
+    font-weight: 500;
+    transition: background-color .2s;
+}
+
+.rk-chip sup {
+    top: -.1em;
+    font-size: .65rem;
+    color: var(--rk-muted);
+}
+
+.rk-chip:hover {
+    color: var(--rk-ink);
+    background-color: var(--rk-card-hover);
+}
+
+.rk-chip.is-active {
+    background-color: var(--rk-yellow);
+    color: var(--rk-green);
+    font-weight: 600;
+}
+
+.rk-chip.is-active sup {
+    color: var(--rk-green);
+}
+
+.rk-search {
+    display: flex;
+    align-items: center;
+    width: min(100%, 18rem);
+    border: 1.5px solid var(--rk-green);
+    border-radius: 999px;
+    padding: .2rem .3rem .2rem 1.1rem;
+}
+
+.rk-search input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-size: .92rem;
+    color: var(--rk-ink);
+}
+
+.rk-search button {
+    width: 2.1rem;
+    height: 2.1rem;
+    flex-shrink: 0;
+    border: 0;
+    border-radius: 50%;
+    background-color: var(--rk-green);
+    color: #fff;
+}
 
 /* Menu cards ----------------------------------------------------------- */
 
-.text-limited {
+.rk-menu-grid {
+    padding-top: 1rem;
+}
+
+.rk-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1.5rem 1.25rem 1.25rem;
+    border-radius: var(--rk-radius);
+    background-color: var(--rk-card);
+    transition: background-color .3s;
+}
+
+.rk-card__plate {
+    width: 78%;
+    aspect-ratio: 1;
+    margin: 0 auto 1.25rem;
+    border-radius: 50%;
+    transition: transform .4s cubic-bezier(.2, .8, .2, 1);
+}
+
+.rk-card__plate img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1;
+    background-color: #fff;
+    color: transparent;
+    max-width: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 6px solid #fff;
+    box-shadow: 0 14px 28px rgba(29, 43, 36, .18);
+}
+
+.rk-card__body {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.rk-card__name {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--rk-ink);
+}
+
+.rk-card__price {
+    flex-shrink: 0;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--rk-ink);
+}
+
+.rk-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+    margin-top: .75rem;
+}
+
+.rk-tag {
+    display: inline-block;
+    padding: .15rem .6rem;
+    border: 1px solid var(--rk-ink);
+    border-radius: 999px;
+    font-size: .75rem;
+    color: var(--rk-ink);
+}
+
+.rk-tag--light {
+    border-color: rgba(255, 255, 255, .6);
+    color: #fff;
+}
+
+.rk-card__order {
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    margin-top: 1rem;
+}
+
+.rk-card__desc {
     display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    margin: 0 0 .25rem;
+    font-size: .82rem;
+    line-height: 1.45;
+    text-align: center;
+    color: var(--rk-ink);
 }
 
-.fruite-img {
-    height: 220px;
-    overflow: hidden;
+.rk-card__desc:empty {
+    display: none;
 }
 
-.fruite-img img {
-    height: 100%;
-    object-fit: cover;
+.rk-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1.5px solid var(--rk-green);
+    border-radius: 999px;
+    padding: .15rem .4rem;
+}
+
+.rk-stepper button {
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--rk-green);
+    font-size: .8rem;
+}
+
+.rk-stepper button:hover {
+    background-color: rgba(15, 61, 46, .08);
+}
+
+.rk-stepper input {
+    width: 3rem;
+    border: 0;
+    background: transparent;
+    text-align: center;
+    font-weight: 500;
+    color: var(--rk-ink);
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.rk-stepper input::-webkit-outer-spin-button,
+.rk-stepper input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.rk-btn-cart {
+    width: 100%;
+    padding: .6rem 1rem;
+    border: 0;
+    border-radius: 999px;
+    background-color: var(--rk-green);
+    color: #fff;
+    font-weight: 600;
+    font-size: .92rem;
+    transition: background-color .2s;
+}
+
+.rk-btn-cart:hover {
+    background-color: var(--rk-green-soft);
+}
+
+.rk-btn-cart:disabled {
+    opacity: .7;
+}
+
+/**
+ * On devices with a real pointer the order controls stay hidden until the card
+ * is hovered or focused: the plate lifts out of the card and the description,
+ * stepper and button take the place of the name and tags. Touch devices keep
+ * everything visible, since there is no hover to reveal it.
+ */
+@media (hover: hover) and (min-width: 576px) {
+    .rk-card__order {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin-top: 0;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(8px);
+        transition: opacity .25s, transform .25s, visibility 0s linear .25s;
+    }
+
+    .rk-card__summary {
+        margin-top: auto;
+        transition: opacity .2s;
+    }
+
+    .rk-card:hover,
+    .rk-card:focus-within {
+        z-index: 2;
+        background-color: var(--rk-card-hover);
+    }
+
+    .rk-card:hover .rk-card__plate,
+    .rk-card:focus-within .rk-card__plate {
+        transform: translateY(-4rem) scale(.88);
+    }
+
+    .rk-card:hover .rk-card__summary,
+    .rk-card:focus-within .rk-card__summary {
+        opacity: 0;
+    }
+
+    .rk-card:hover .rk-card__order,
+    .rk-card:focus-within .rk-card__order {
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        transition: opacity .25s, transform .25s, visibility 0s;
+    }
+
+    .rk-card__body {
+        min-height: 6.75rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rk-card__plate,
+    .rk-card__order {
+        transition: none;
+    }
+}
+
+/* Footer ---------------------------------------------------------------- */
+
+.rk-footer {
+    background-color: var(--rk-green);
+    color: rgba(255, 255, 255, .72);
+}
+
+.rk-footer h4 {
+    color: #fff;
+    font-size: 1.15rem;
+}
+
+.rk-footer a {
+    color: rgba(255, 255, 255, .85);
+}
+
+.rk-footer a:hover {
+    color: var(--rk-yellow);
+}
+
+.rk-footer__top {
+    border-bottom: 1px solid rgba(246, 197, 68, .35);
+}
+
+.rk-social {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border: 1px solid rgba(255, 255, 255, .35);
+    border-radius: 50%;
+}
+
+.rk-social:hover {
+    border-color: var(--rk-yellow);
+}
+
+.rk-footer__copy {
+    background-color: #0b2f23;
+    font-size: .88rem;
 }
 
 /* Bootstrap 5.2+ utilities, backfilled ---------------------------------- */
 
 /**
  * The customer template ships Bootstrap 5.0, which predates the .text-bg-*
- * utilities. Without them .badge renders white text on no background, which is
- * invisible against the white navbar. Text colours follow Bootstrap's own
- * contrast rule rather than a blanket white: this theme's primary (#81C408) and
- * secondary (#FFB524) are light, so they take dark text.
+ * utilities. Without them .badge renders white text on no background. Text
+ * colours follow Bootstrap's own contrast rule rather than a blanket white:
+ * primary is the dark brand green and takes white text, while secondary is the
+ * yellow accent and takes dark text.
  */
 .text-bg-primary {
-    color: #212529 !important;
-    background-color: var(--bs-primary, #81c408) !important;
+    color: #fff !important;
+    background-color: var(--rk-green) !important;
 }
 
 .text-bg-secondary {
-    color: #212529 !important;
-    background-color: var(--bs-secondary, #ffb524) !important;
+    color: var(--rk-green) !important;
+    background-color: var(--rk-yellow) !important;
 }
 
 .text-bg-success {
@@ -64,25 +656,27 @@
 
 .text-bg-light {
     color: #212529 !important;
-    background-color: var(--bs-light, #f4f6f8) !important;
+    background-color: var(--rk-card) !important;
 }
 
 .text-bg-dark {
     color: #fff !important;
-    background-color: var(--bs-dark, #45595b) !important;
+    background-color: var(--rk-green) !important;
 }
 
 /* Cart badge ----------------------------------------------------------- */
 
 .cart-badge {
     position: absolute;
-    top: -8px;
-    right: -12px;
-    min-width: 20px;
-    font-size: .7rem;
+    top: -6px;
+    right: -8px;
+    min-width: 18px;
+    font-size: .65rem;
     line-height: 1.1;
     padding: .3em .45em;
-    box-shadow: 0 0 0 2px #fff;
+    color: var(--rk-green);
+    background-color: var(--rk-yellow);
+    box-shadow: 0 0 0 2px var(--rk-cream);
 }
 
 /**

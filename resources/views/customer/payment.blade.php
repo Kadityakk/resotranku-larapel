@@ -5,8 +5,8 @@
 @section('page_subtitle', 'Selesaikan pembayaran untuk meneruskan pesanan ke dapur')
 
 @section('content')
-<div class="container-fluid py-5">
-    <div class="container py-5">
+<div class="container-fluid">
+    <div class="container pb-5">
         <div class="row justify-content-center">
             <div class="col-lg-6">
                 <div class="bg-light rounded p-4 text-center">

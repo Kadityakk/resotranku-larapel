@@ -5,8 +5,8 @@
 @section('page_subtitle', 'Lengkapi data Anda, lalu pilih metode pembayaran')
 
 @section('content')
-<div class="container-fluid py-5">
-    <div class="container py-5">
+<div class="container-fluid">
+    <div class="container pb-5">
         <form action="{{ route('checkout.store') }}" method="POST">
             @csrf
             <div class="row g-5">

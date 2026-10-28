@@ -5,8 +5,8 @@
 @section('page_subtitle', 'Periksa pesanan Anda sebelum melanjutkan ke pembayaran')
 
 @section('content')
-<div class="container-fluid py-5">
-    <div class="container py-5">
+<div class="container-fluid">
+    <div class="container pb-5">
 
         @if (empty($cart))
             <x-empty-state icon="fa-shopping-bag" title="Keranjang Anda masih kosong"
