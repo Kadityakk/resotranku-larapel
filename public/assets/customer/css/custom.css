@@ -349,8 +349,186 @@ a:hover {
 
 /* Menu cards ----------------------------------------------------------- */
 
+/* Splash band of the newest menus -------------------------------------- */
+
+.rk-splash {
+    margin-bottom: 3rem;
+}
+
+.rk-splash__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .25rem .75rem;
+    margin-bottom: 1.1rem;
+}
+
+.rk-splash__title {
+    margin: 0;
+    font-size: clamp(1.35rem, 3vw, 1.75rem);
+    font-weight: 800;
+    letter-spacing: -.02em;
+    color: var(--rk-green);
+}
+
+.rk-splash__lead {
+    margin: 0;
+    color: var(--rk-muted);
+    font-size: .95rem;
+}
+
+.rk-splash__viewport {
+    overflow: hidden;
+    /* Fade the ends so tiles slide in and out instead of being cut off. */
+    mask-image: linear-gradient(to right, transparent, #000 2rem, #000 calc(100% - 2rem), transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 2rem, #000 calc(100% - 2rem), transparent);
+}
+
+/**
+ * The track carries the set three times, so shifting it by exactly one set
+ * width lands on an identical frame and the loop is seamless. Three copies
+ * rather than two guarantees the visible strip stays filled on wide screens.
+ */
+.rk-splash__track {
+    display: flex;
+    width: max-content;
+    animation: rk-splash-slide 34s linear infinite;
+}
+
+.rk-splash:hover .rk-splash__track,
+.rk-splash:focus-within .rk-splash__track {
+    animation-play-state: paused;
+}
+
+@keyframes rk-splash-slide {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-33.3333%);
+    }
+}
+
+.rk-splash__set {
+    display: flex;
+    gap: 1rem;
+    /* Keeps the spacing rhythm identical across the seam between sets. */
+    padding-right: 1rem;
+}
+
+.rk-splash__item {
+    position: relative;
+    display: block;
+    flex: 0 0 clamp(14rem, 30vw, 21rem);
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--rk-radius);
+    background-color: var(--rk-card);
+    text-decoration: none;
+    box-shadow: 0 10px 24px rgba(29, 43, 36, .12);
+}
+
+.rk-splash__item img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .5s cubic-bezier(.2, .8, .2, 1);
+}
+
+.rk-splash__item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15, 61, 46, .88) 0%, rgba(15, 61, 46, .25) 42%, transparent 70%);
+}
+
+.rk-splash__item:hover img,
+.rk-splash__item:focus-visible img {
+    transform: scale(1.06);
+}
+
+.rk-splash__item:focus-visible {
+    outline: 3px solid var(--rk-yellow);
+    outline-offset: 3px;
+}
+
+.rk-splash__flag {
+    position: absolute;
+    top: .75rem;
+    left: .75rem;
+    z-index: 1;
+    padding: .2rem .65rem;
+    border-radius: 999px;
+    background-color: var(--rk-yellow);
+    color: var(--rk-green);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.rk-splash__caption {
+    position: absolute;
+    inset: auto 0 0 0;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: .2rem .6rem;
+    padding: .85rem 1rem;
+    color: #fff;
+}
+
+.rk-splash__name {
+    font-weight: 600;
+    font-size: .98rem;
+    line-height: 1.25;
+}
+
+.rk-splash__price {
+    font-weight: 700;
+    font-size: .92rem;
+    color: var(--rk-yellow);
+    white-space: nowrap;
+}
+
+/**
+ * Readers who ask for less motion get a static strip they can swipe through,
+ * with the decorative duplicates dropped.
+ */
+@media (prefers-reduced-motion: reduce) {
+    .rk-splash__track {
+        animation: none;
+    }
+
+    .rk-splash__viewport {
+        overflow-x: auto;
+    }
+
+    .rk-splash__set[aria-hidden="true"] {
+        display: none;
+    }
+
+    .rk-splash__item img {
+        transition: none;
+    }
+
+    .rk-splash__item:hover img,
+    .rk-splash__item:focus-visible img {
+        transform: none;
+    }
+}
+
 .rk-menu-grid {
     padding-top: 1rem;
+}
+
+/* The navbar is sticky, so anchored cards need room above them. */
+.rk-card[id] {
+    scroll-margin-top: 6.5rem;
 }
 
 .rk-card {

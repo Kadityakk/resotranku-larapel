@@ -15,6 +15,7 @@ use App\Services\CartService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class MenuController extends Controller
@@ -31,22 +32,42 @@ class MenuController extends Controller
             $this->cart->setTableNumber((int) $request->query('meja'));
         }
 
+        $activeCategory = $request->integer('category') ?: null;
+        $search = $request->string('q')->value();
+
         $items = Item::active()
             ->with('category')
-            ->when($request->filled('category'), fn ($query) => $query->where('category_id', $request->integer('category')))
-            ->when($request->filled('q'), fn ($query) => $query->where('name', 'like', '%'.$request->string('q').'%'))
+            ->when($activeCategory, fn ($query) => $query->where('category_id', $activeCategory))
+            ->when(filled($search), fn ($query) => $query->where('name', 'like', '%'.$search.'%'))
             ->orderBy('name')
             ->get();
 
         return view('customer.menu', [
             'items' => $items,
+            'latestItems' => $this->latestItems($activeCategory === null && blank($search)),
             'categories' => Category::withCount(['items' => fn ($query) => $query->active()])
                 ->orderBy('cat_name')
                 ->get(),
-            'activeCategory' => $request->integer('category') ?: null,
-            'search' => $request->string('q')->value(),
+            'activeCategory' => $activeCategory,
+            'search' => $search,
             'tableNumber' => $this->cart->tableNumber(),
         ]);
+    }
+
+    /**
+     * The three most recently added menus, shown as the splash band at the top
+     * of the menu. Skipped while a category or search filter is active, since a
+     * hero of unrelated dishes only gets in the way of the result list.
+     *
+     * @return Collection<int, Item>
+     */
+    private function latestItems(bool $browsingEverything): Collection
+    {
+        if (! $browsingEverything) {
+            return collect();
+        }
+
+        return Item::active()->with('category')->latest()->limit(3)->get();
     }
 
     public function cart(): View
