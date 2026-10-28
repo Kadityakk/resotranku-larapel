@@ -2,18 +2,21 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Item;
+use Illuminate\Database\Seeder;
 
 class ItemSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Fills the menu only when it is empty, so re-running the seeder never
+     * duplicates the catalogue.
      */
     public function run(): void
     {
-        // create 10 item
-        Item::factory()->count(10)->create();
+        if (Item::exists()) {
+            return;
+        }
+
+        Item::factory()->count(12)->create();
     }
 }

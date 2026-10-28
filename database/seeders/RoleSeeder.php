@@ -2,36 +2,29 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Enums\RoleName;
+use App\Models\Role;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class RoleSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Seeds the four roles the application gates behaviour on. Safe to re-run.
      */
     public function run(): void
     {
-        $roles = [
-            [
-                'role_name' => 'Admin',
-                'description' => 'Administrator',
-            ],
-            [
-                'role_name' => 'cashier',
-                'description' => 'Cashier',
-            ],
-            [
-                'role_name' => 'Chef',
-                'description' => 'Chef',
-            ],
-
-            [
-                'role_name' => 'User',
-                'description' => 'User',
-            ],
+        $descriptions = [
+            RoleName::Admin->value => 'Administrator dengan akses penuh ke seluruh menu pengelolaan',
+            RoleName::Cashier->value => 'Kasir yang menerima pembayaran dan mengonfirmasi pesanan',
+            RoleName::Chef->value => 'Koki yang memasak dan memperbarui status pesanan di dapur',
+            RoleName::User->value => 'Pelanggan yang memesan menu dari meja',
         ];
-        DB::table('roles')->insert($roles);
+
+        foreach ($descriptions as $roleName => $description) {
+            Role::updateOrCreate(
+                ['role_name' => $roleName],
+                ['description' => $description],
+            );
+        }
     }
 }

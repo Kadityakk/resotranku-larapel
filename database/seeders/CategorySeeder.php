@@ -2,28 +2,26 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Category;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class CategorySeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Seeds the menu categories. Safe to re-run.
      */
     public function run(): void
     {
         $categories = [
-            [
-                'cat_name' => 'Makanan',
-                'description' => 'Kategori Makanan',
-            ],
-            [
-                'cat_name' => 'Minuman',
-                'description' => 'Kategori Minuman',
-            ],
+            'Makanan' => 'Hidangan utama dan lauk',
+            'Minuman' => 'Minuman dingin dan hangat',
         ];
 
-        DB::table('categories')->insert($categories);
+        foreach ($categories as $name => $description) {
+            Category::updateOrCreate(
+                ['cat_name' => $name],
+                ['description' => $description],
+            );
+        }
     }
 }

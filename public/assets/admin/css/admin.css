@@ -1,0 +1,322 @@
+/**
+ * Restoranku admin theme.
+ *
+ * Shares the storefront's palette (primary #81C408, secondary #FFB524) so the
+ * back office and the customer pages read as one product.
+ */
+
+:root {
+    --rk-primary: #81c408;
+    --rk-primary-dark: #6ca406;
+    --rk-secondary: #ffb524;
+    --rk-sidebar-bg: #1f2a24;
+    --rk-sidebar-hover: #2b3a31;
+    --rk-sidebar-text: #c7d3cb;
+    --rk-body-bg: #f4f6f3;
+    --rk-sidebar-width: 260px;
+}
+
+body.rk-admin {
+    background-color: var(--rk-body-bg);
+    font-family: 'Open Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+/* Sidebar ---------------------------------------------------------------- */
+
+.rk-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--rk-sidebar-width);
+    background-color: var(--rk-sidebar-bg);
+    overflow-y: auto;
+    z-index: 1040;
+    transition: transform .25s ease;
+}
+
+.rk-sidebar__brand {
+    padding: 1.25rem 1.25rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.rk-sidebar__brand h1 {
+    font-family: 'Raleway', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--rk-primary);
+    margin: 0;
+}
+
+.rk-sidebar__brand small {
+    color: var(--rk-sidebar-text);
+    font-size: .75rem;
+}
+
+.rk-sidebar__heading {
+    color: rgba(199, 211, 203, .55);
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 1.25rem 1.25rem .4rem;
+    margin: 0;
+}
+
+.rk-sidebar .nav-link {
+    color: var(--rk-sidebar-text);
+    padding: .65rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    border-left: 3px solid transparent;
+    font-size: .925rem;
+}
+
+.rk-sidebar .nav-link i {
+    width: 1.1rem;
+    text-align: center;
+}
+
+.rk-sidebar .nav-link:hover,
+.rk-sidebar .nav-link:focus-visible {
+    background-color: var(--rk-sidebar-hover);
+    color: #fff;
+}
+
+.rk-sidebar .nav-link.active {
+    background-color: var(--rk-sidebar-hover);
+    border-left-color: var(--rk-primary);
+    color: #fff;
+    font-weight: 600;
+}
+
+.rk-sidebar .nav-link .badge {
+    margin-left: auto;
+}
+
+/* Content -------------------------------------------------------------- */
+
+.rk-content {
+    margin-left: var(--rk-sidebar-width);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.rk-topbar {
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, .07);
+    padding: .85rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+}
+
+.rk-main {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+.rk-footer {
+    padding: 1rem 1.5rem;
+    color: #7a877f;
+    font-size: .85rem;
+    border-top: 1px solid rgba(0, 0, 0, .06);
+}
+
+.rk-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .45);
+    z-index: 1035;
+    display: none;
+}
+
+@media (max-width: 991.98px) {
+    .rk-sidebar {
+        transform: translateX(-100%);
+    }
+
+    body.rk-sidebar-open .rk-sidebar {
+        transform: translateX(0);
+    }
+
+    body.rk-sidebar-open .rk-backdrop {
+        display: block;
+    }
+
+    .rk-content {
+        margin-left: 0;
+    }
+}
+
+/* Components ----------------------------------------------------------- */
+
+.rk-card {
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, .06);
+    border-radius: .75rem;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, .04);
+}
+
+.rk-stat {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.15rem 1.25rem;
+}
+
+.rk-stat__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: .75rem;
+    display: grid;
+    place-items: center;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+}
+
+.rk-stat__value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 0;
+}
+
+.rk-stat__label {
+    color: #7a877f;
+    font-size: .8rem;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+}
+
+.rk-thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: .5rem;
+    object-fit: cover;
+    background-color: #e9ece8;
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--rk-primary);
+    --bs-btn-border-color: var(--rk-primary);
+    --bs-btn-hover-bg: var(--rk-primary-dark);
+    --bs-btn-hover-border-color: var(--rk-primary-dark);
+    --bs-btn-active-bg: var(--rk-primary-dark);
+    --bs-btn-active-border-color: var(--rk-primary-dark);
+    --bs-btn-color: #fff;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-active-color: #fff;
+    --bs-btn-disabled-bg: var(--rk-primary);
+    --bs-btn-disabled-border-color: var(--rk-primary);
+    --bs-btn-disabled-color: #fff;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--rk-primary-dark);
+    --bs-btn-border-color: var(--rk-primary);
+    --bs-btn-hover-bg: var(--rk-primary);
+    --bs-btn-hover-border-color: var(--rk-primary);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-active-bg: var(--rk-primary-dark);
+    --bs-btn-active-border-color: var(--rk-primary-dark);
+}
+
+.text-bg-primary {
+    background-color: var(--rk-primary) !important;
+    color: #fff !important;
+}
+
+.text-primary {
+    color: var(--rk-primary-dark) !important;
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    border-color: var(--rk-primary);
+    box-shadow: 0 0 0 .2rem rgba(129, 196, 8, .2);
+}
+
+.form-check-input:checked {
+    background-color: var(--rk-primary);
+    border-color: var(--rk-primary);
+}
+
+/* DataTables ----------------------------------------------------------- */
+
+div.dt-container .dt-search input,
+div.dt-container .dt-length select {
+    border-radius: .4rem;
+}
+
+div.dt-container .dt-paging .dt-paging-button.current {
+    background: var(--rk-primary) !important;
+    border-color: var(--rk-primary) !important;
+    color: #fff !important;
+}
+
+table.dataTable > thead > tr > th {
+    font-size: .78rem;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: #5d6b62;
+}
+
+/* Kitchen board -------------------------------------------------------- */
+
+.rk-kitchen-column {
+    background-color: #fff;
+    border-radius: .75rem;
+    border: 1px solid rgba(0, 0, 0, .06);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.rk-kitchen-column__head {
+    padding: .85rem 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, .06);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.rk-kitchen-column__body {
+    padding: 1rem;
+    display: grid;
+    gap: .75rem;
+}
+
+.rk-ticket {
+    border: 1px solid rgba(0, 0, 0, .08);
+    border-left: 4px solid var(--rk-primary);
+    border-radius: .5rem;
+    padding: .85rem;
+}
+
+.rk-ticket__code {
+    font-weight: 700;
+    font-size: .95rem;
+}
+
+@media print {
+    .rk-sidebar,
+    .rk-topbar,
+    .rk-footer,
+    .d-print-none {
+        display: none !important;
+    }
+
+    .rk-content {
+        margin-left: 0;
+    }
+
+    body.rk-admin {
+        background: #fff;
+    }
+}
