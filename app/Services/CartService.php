@@ -6,10 +6,11 @@ use App\Models\Item;
 use Illuminate\Support\Collection;
 
 /**
- * Owns the session shopping cart and every money calculation derived from it,
- * so the cart page, the checkout page and the stored order always agree.
+ * Owns the menus a guest has picked (shown in the order bar on the menu page)
+ * and every money calculation derived from them, so the order bar, the
+ * checkout page and the stored order always agree.
  *
- * @phpstan-type CartLine array{id: int, name: string, price: int, image: string, qty: int}
+ * @phpstan-type CartLine array{id: int, name: string, price: int, image: string, qty: int, note: ?string}
  */
 class CartService
 {
@@ -65,6 +66,7 @@ class CartService
             'price' => $item->price,
             'image' => $item->imageUrl(),
             'qty' => $existingQuantity + $quantity,
+            'note' => $cart[$item->id]['note'] ?? null,
         ];
 
         return $this->put($cart);
@@ -86,6 +88,25 @@ class CartService
         }
 
         $cart[$itemId]['qty'] = $quantity;
+        $this->put($cart);
+
+        return true;
+    }
+
+    /**
+     * Stores the guest's message for one line, e.g. "tanpa wasabi". A blank
+     * message clears it.
+     */
+    public function setNote(int $itemId, ?string $note): bool
+    {
+        $cart = $this->all();
+
+        if (! isset($cart[$itemId])) {
+            return false;
+        }
+
+        $note = trim((string) $note);
+        $cart[$itemId]['note'] = $note === '' ? null : $note;
         $this->put($cart);
 
         return true;

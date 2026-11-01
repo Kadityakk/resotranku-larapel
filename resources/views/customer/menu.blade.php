@@ -116,7 +116,7 @@
                                         data-item-id="{{ $item->id }}"
                                         data-qty-source="#qty-{{ $item->id }}"
                                         data-url="{{ route('cart.add') }}">
-                                    Tambah Keranjang
+                                    <i class="fa fa-plus me-1"></i> Tambah Pesanan
                                 </button>
                             </div>
                         </div>
@@ -126,4 +126,12 @@
         </div>
     @endif
 </div>
+
+{{-- Picked menus collect here instead of on a separate cart page. --}}
+<section id="order-bar" class="rk-orderbar {{ $orderBar['lines'] === [] ? 'is-empty' : '' }}"
+         aria-label="Pesanan Anda" data-order-bar>
+    <div class="container" data-order-bar-body>
+        @include('customer.partials.order-bar')
+    </div>
+</section>
 @endsection

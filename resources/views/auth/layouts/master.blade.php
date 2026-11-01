@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Masuk') &middot; Restoranku</title>
+    <title>@yield('title', 'Masuk') &middot; Sushiomai</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,7 +21,7 @@
         <aside class="rk-auth__aside d-none d-lg-flex">
             <div class="rk-auth__aside-content">
                 <a href="{{ route('menu') }}" class="rk-auth__brand text-decoration-none">
-                    <h1>Restoranku</h1>
+                    <h1>Sushiomai</h1>
                     <p>Pilihan Lezat di Ujung Jari Anda!</p>
                 </a>
 
@@ -33,7 +33,7 @@
                 </ul>
 
                 <p class="rk-auth__aside-foot mb-0">
-                    &copy; {{ now()->year }} Restoranku. Semua hak dilindungi.
+                    &copy; {{ now()->year }} Sushiomai. Semua hak dilindungi.
                 </p>
             </div>
         </aside>
@@ -41,7 +41,7 @@
         <main class="rk-auth__main">
             <div class="rk-auth__card">
                 <a href="{{ route('menu') }}" class="rk-auth__brand rk-auth__brand--compact d-lg-none text-decoration-none">
-                    <h1>Restoranku</h1>
+                    <h1>Sushiomai</h1>
                 </a>
 
                 <header class="mb-4">

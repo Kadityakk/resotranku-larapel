@@ -18,21 +18,21 @@ class UserSeeder extends Seeder
         $accounts = [
             [
                 'username' => 'admin',
-                'fullname' => 'Admin Restoranku',
+                'fullname' => 'Admin Sushiomai',
                 'email' => 'admin@restoranku.test',
                 'phone' => '081200000001',
                 'role' => RoleName::Admin,
             ],
             [
                 'username' => 'kasir',
-                'fullname' => 'Kasir Restoranku',
+                'fullname' => 'Kasir Sushiomai',
                 'email' => 'kasir@restoranku.test',
                 'phone' => '081200000002',
                 'role' => RoleName::Cashier,
             ],
             [
                 'username' => 'koki',
-                'fullname' => 'Koki Restoranku',
+                'fullname' => 'Koki Sushiomai',
                 'email' => 'koki@restoranku.test',
                 'phone' => '081200000003',
                 'role' => RoleName::Chef,

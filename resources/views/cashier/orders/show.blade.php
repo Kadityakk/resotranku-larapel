@@ -9,7 +9,7 @@
     <div class="col-lg-7">
         <div class="rk-card p-4 mb-3">
             <div class="text-center border-bottom pb-3 mb-3">
-                <h2 class="h4 mb-1">Restoranku</h2>
+                <h2 class="h4 mb-1">Sushiomai</h2>
                 <p class="text-body-secondary small mb-0">Struk Pesanan</p>
             </div>
 
@@ -53,6 +53,9 @@
                             <td>
                                 {{ $orderItem->item?->name ?? 'Menu telah dihapus' }}
                                 <small class="d-block text-body-secondary"><x-rupiah :value="$orderItem->price" /> / porsi</small>
+                                @if ($orderItem->note)
+                                    <small class="d-block text-body-secondary fst-italic">Pesan: {{ $orderItem->note }}</small>
+                                @endif
                             </td>
                             <td class="text-center">{{ $orderItem->quantity }}</td>
                             <td class="text-end"><x-rupiah :value="$orderItem->total_price" /></td>

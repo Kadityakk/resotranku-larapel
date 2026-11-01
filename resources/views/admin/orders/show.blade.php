@@ -32,7 +32,14 @@
                                             <img src="{{ $orderItem->item->imageUrl() }}" class="rk-thumb"
                                                  style="width: 40px; height: 40px;" alt="">
                                         @endif
-                                        <span>{{ $orderItem->item?->name ?? 'Menu telah dihapus' }}</span>
+                                        <span>
+                                            {{ $orderItem->item?->name ?? 'Menu telah dihapus' }}
+                                            @if ($orderItem->note)
+                                                <small class="d-block text-body-secondary">
+                                                    <i class="fas fa-comment-dots me-1"></i>{{ $orderItem->note }}
+                                                </small>
+                                            @endif
+                                        </span>
                                     </div>
                                 </td>
                                 <td><x-rupiah :value="$orderItem->price" /></td>

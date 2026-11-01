@@ -13,7 +13,7 @@ class OrderItem extends Model
     /** @use HasFactory<OrderItemFactory> */
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['order_id', 'item_id', 'quantity', 'price', 'tax', 'total_price'];
+    protected $fillable = ['order_id', 'item_id', 'quantity', 'price', 'tax', 'total_price', 'note'];
 
     protected function casts(): array
     {

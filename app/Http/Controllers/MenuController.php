@@ -51,6 +51,7 @@ class MenuController extends Controller
             'activeCategory' => $activeCategory,
             'search' => $search,
             'tableNumber' => $this->cart->tableNumber(),
+            'orderBar' => $this->orderBarData(),
         ]);
     }
 
@@ -70,16 +71,6 @@ class MenuController extends Controller
         return Item::active()->with('category')->latest()->limit(3)->get();
     }
 
-    public function cart(): View
-    {
-        return view('customer.cart', [
-            'cart' => $this->cart->all(),
-            'totals' => $this->cart->totals(),
-            'taxRate' => $this->cart->taxRate(),
-            'tableNumber' => $this->cart->tableNumber(),
-        ]);
-    }
-
     public function addToCart(AddToCartRequest $request): JsonResponse
     {
         $item = Item::active()->find($request->validated('id'));
@@ -93,24 +84,29 @@ class MenuController extends Controller
 
         $this->cart->add($item, $request->quantity());
 
-        return $this->cartResponse($item->name.' ditambahkan ke keranjang.');
+        return $this->cartResponse($item->name.' ditambahkan ke pesanan.');
     }
 
     public function updateCart(UpdateCartRequest $request): JsonResponse
     {
-        $updated = $this->cart->setQuantity(
-            (int) $request->validated('id'),
-            (int) $request->validated('qty'),
-        );
+        $itemId = (int) $request->validated('id');
 
-        if (! $updated) {
+        if ($this->cart->line($itemId) === null) {
             return response()->json([
                 'success' => false,
-                'message' => 'Item tidak ada di keranjang.',
+                'message' => 'Menu ini belum ada di pesanan Anda.',
             ], 422);
         }
 
-        return $this->cartResponse('Keranjang berhasil diperbarui.');
+        if ($request->hasNote()) {
+            $this->cart->setNote($itemId, $request->validated('note'));
+        }
+
+        if ($request->has('qty')) {
+            $this->cart->setQuantity($itemId, (int) $request->validated('qty'));
+        }
+
+        return $this->cartResponse('Pesanan berhasil diperbarui.');
     }
 
     public function removeFromCart(RemoveFromCartRequest $request): JsonResponse
@@ -118,24 +114,17 @@ class MenuController extends Controller
         if (! $this->cart->remove((int) $request->validated('id'))) {
             return response()->json([
                 'success' => false,
-                'message' => 'Item tidak ada di keranjang.',
+                'message' => 'Menu ini belum ada di pesanan Anda.',
             ], 422);
         }
 
-        return $this->cartResponse('Item berhasil dihapus dari keranjang.');
-    }
-
-    public function clearCart(): RedirectResponse
-    {
-        $this->cart->clear();
-
-        return redirect()->route('cart')->with('success', 'Keranjang berhasil dikosongkan.');
+        return $this->cartResponse('Menu dihapus dari pesanan.');
     }
 
     public function checkout(): View|RedirectResponse
     {
         if ($this->cart->isEmpty()) {
-            return redirect()->route('menu')->with('error', 'Keranjang kosong. Silakan tambahkan menu sebelum checkout.');
+            return redirect()->route('menu')->with('error', 'Belum ada menu yang dipilih. Silakan pilih menu terlebih dahulu.');
         }
 
         return view('customer.checkout', [
@@ -196,6 +185,25 @@ class MenuController extends Controller
         session()->put('recent_order_codes', array_slice(array_unique($codes), -10));
     }
 
+    /**
+     * Everything the order bar partial renders.
+     *
+     * @return array{lines: array<int, array{id: int, name: string, price: int, image: string, qty: int, note: ?string}>, totals: array{subtotal: int, tax: int, grand_total: int}, quantity: int, taxRate: float}
+     */
+    private function orderBarData(): array
+    {
+        return [
+            'lines' => $this->cart->all(),
+            'totals' => $this->cart->totals(),
+            'quantity' => $this->cart->totalQuantity(),
+            'taxRate' => $this->cart->taxRate(),
+        ];
+    }
+
+    /**
+     * The order bar is re-rendered on the server after every change, so its
+     * markup lives in one Blade partial instead of being rebuilt in JavaScript.
+     */
     private function cartResponse(string $message): JsonResponse
     {
         return response()->json([
@@ -203,6 +211,7 @@ class MenuController extends Controller
             'message' => $message,
             'cart_quantity' => $this->cart->totalQuantity(),
             'totals' => $this->cart->totals(),
+            'order_bar' => view('customer.partials.order-bar', ['orderBar' => $this->orderBarData()])->render(),
         ]);
     }
 }

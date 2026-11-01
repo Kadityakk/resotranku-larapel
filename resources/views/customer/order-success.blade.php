@@ -82,7 +82,12 @@
                         <tbody>
                             @foreach ($order->orderItems as $orderItem)
                                 <tr>
-                                    <td>{{ $orderItem->item?->name ?? 'Menu dihapus' }}</td>
+                                    <td>
+                                        {{ $orderItem->item?->name ?? 'Menu dihapus' }}
+                                        @if ($orderItem->note)
+                                            <small class="d-block text-body-secondary">{{ $orderItem->note }}</small>
+                                        @endif
+                                    </td>
                                     <td><x-rupiah :value="$orderItem->price" /></td>
                                     <td>{{ $orderItem->quantity }}</td>
                                     <td class="text-end"><x-rupiah :value="$orderItem->price * $orderItem->quantity" /></td>

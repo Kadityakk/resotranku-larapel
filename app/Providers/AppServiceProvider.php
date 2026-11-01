@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Models\Order;
-use App\Services\CartService;
 use App\Services\Contracts\PaymentGateway;
 use App\Services\MidtransGateway;
 use Illuminate\Support\Facades\View;
@@ -33,15 +32,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->shareCartQuantityWithNavbar();
         $this->shareOrderCountsWithSidebar();
-    }
-
-    private function shareCartQuantityWithNavbar(): void
-    {
-        View::composer('customer.layouts.__navbar', function ($view): void {
-            $view->with('cartQuantity', $this->app->make(CartService::class)->totalQuantity());
-        });
     }
 
     /**

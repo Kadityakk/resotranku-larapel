@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="utf-8">
-        <title>@yield('title', 'Menu') &middot; Restoranku</title>
+        <title>@yield('title', 'Menu') &middot; Sushiomai</title>
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta content="restoran, menu, pesan online, qris" name="keywords">
@@ -28,7 +28,7 @@
         <!-- Template Stylesheet -->
         <link href="{{ asset('assets/customer/css/style.css') }}" rel="stylesheet">
 
-        <!-- Restoranku Stylesheet -->
+        <!-- Sushiomai Stylesheet -->
         <link href="{{ asset('assets/customer/css/custom.css') }}" rel="stylesheet">
 
         @stack('styles')

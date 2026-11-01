@@ -1,20 +1,16 @@
 /**
- * Cart interactions for the customer pages.
+ * Order bar interactions for the customer menu page.
  *
- * Every endpoint and item id is read from data attributes rendered by Blade, so
- * no URL or token is hard-coded here.
+ * Picked menus collect in the bar fixed to the bottom of the screen. The
+ * server re-renders the bar after every change and this script swaps that
+ * markup in, so no markup is rebuilt here. Every endpoint and item id is read
+ * from data attributes rendered by Blade, so no URL or token is hard-coded.
  */
 (function () {
     'use strict';
 
     var csrfToken = document.querySelector('meta[name="csrf-token"]');
     csrfToken = csrfToken ? csrfToken.getAttribute('content') : '';
-
-    var rupiah = new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 });
-
-    function formatRupiah(value) {
-        return 'Rp' + rupiah.format(Math.round(value || 0));
-    }
 
     function toast(message, variant) {
         var stack = document.getElementById('toast-stack');
@@ -67,83 +63,103 @@
         });
     }
 
-    /**
-     * Writes the new cart count onto the navbar badge and replays the pop
-     * animation, so adding an item is visibly acknowledged.
-     */
-    function updateBadge(quantity) {
-        var badge = document.getElementById('cart-badge');
-
-        if (!badge) {
-            return;
-        }
-
-        var changed = String(badge.textContent).trim() !== String(quantity);
-
-        badge.textContent = quantity;
-        badge.classList.toggle('d-none', !quantity);
-
-        if (!quantity || !changed) {
-            return;
-        }
-
-        badge.classList.remove('is-bumped');
-        void badge.offsetWidth; // reflow, so the animation restarts every time
-        badge.classList.add('is-bumped');
+    function orderBar() {
+        return document.querySelector('[data-order-bar]');
     }
 
-    function updateSummary(totals) {
-        if (!totals) {
+    function setOpen(open) {
+        var bar = orderBar();
+
+        if (!bar) {
             return;
         }
 
-        var map = {
-            '[data-summary-subtotal]': totals.subtotal,
-            '[data-summary-tax]': totals.tax,
-            '[data-summary-total]': totals.grand_total
-        };
+        bar.classList.toggle('is-open', open);
+        fitListToTwoLines(bar);
 
-        Object.keys(map).forEach(function (selector) {
-            document.querySelectorAll(selector).forEach(function (node) {
-                node.textContent = formatRupiah(map[selector]);
-            });
-        });
+        var toggle = bar.querySelector('[data-order-bar-toggle]');
+
+        if (toggle) {
+            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+    }
+
+    function listOf(bar) {
+        return bar.querySelector('.rk-orderbar__list');
+    }
+
+    /**
+     * Caps the list at the height of its first two lines, so a third menu
+     * scrolls inside the bar instead of stacking it higher up the screen.
+     */
+    function fitListToTwoLines(bar) {
+        var list = listOf(bar);
+        var lines = list ? list.querySelectorAll('[data-cart-line]') : [];
+
+        if (!list || !bar.classList.contains('is-open')) {
+            return;
+        }
+
+        if (lines.length < 3) {
+            list.style.setProperty('--rk-orderbar-list-max', 'none');
+            return;
+        }
+
+        var height = lines[1].offsetTop + lines[1].offsetHeight - list.offsetTop;
+        list.style.setProperty('--rk-orderbar-list-max', height + 'px');
+    }
+
+    /**
+     * Swaps in the freshly rendered bar, keeps it open or closed and the list
+     * scrolled where it was, and replays the pop animation so a change is
+     * visibly acknowledged. A newly added menu is scrolled into view.
+     */
+    function renderOrderBar(data, options) {
+        var bar = orderBar();
+
+        if (!bar || typeof data.order_bar !== 'string') {
+            return;
+        }
+
+        var body = bar.querySelector('[data-order-bar-body]');
+        var isEmpty = !data.cart_quantity;
+        var open = !isEmpty && (bar.classList.contains('is-open') || (options && options.open));
+        var previousList = listOf(bar);
+        var scrollTop = previousList ? previousList.scrollTop : 0;
+
+        body.innerHTML = data.order_bar;
+        bar.classList.toggle('is-empty', isEmpty);
+        setOpen(open);
+
+        var list = listOf(bar);
+
+        if (list) {
+            list.scrollTop = scrollTop;
+
+            var added = options && options.itemId ? lineOf(options.itemId) : null;
+
+            if (added) {
+                list.scrollTop = Math.max(0, added.offsetTop - list.offsetTop + added.offsetHeight - list.clientHeight);
+            }
+        }
+
+        if (isEmpty) {
+            return;
+        }
+
+        bar.classList.remove('is-bumped');
+        void bar.offsetWidth; // reflow, so the animation restarts every time
+        bar.classList.add('is-bumped');
+    }
+
+    function setBusy(control, busy) {
+        if (control) {
+            control.disabled = busy;
+        }
     }
 
     function lineOf(itemId) {
         return document.querySelector('[data-cart-line="' + itemId + '"]');
-    }
-
-    function updateLine(itemId, quantity) {
-        var line = lineOf(itemId);
-
-        if (!line) {
-            return;
-        }
-
-        if (quantity <= 0) {
-            line.remove();
-            refreshIfCartEmpty();
-            return;
-        }
-
-        var input = line.querySelector('[data-qty-input]');
-        var total = line.querySelector('[data-line-total]');
-        var price = parseInt(line.getAttribute('data-price'), 10) || 0;
-
-        if (input) {
-            input.value = quantity;
-        }
-
-        if (total) {
-            total.textContent = formatRupiah(price * quantity);
-        }
-    }
-
-    function refreshIfCartEmpty() {
-        if (!document.querySelectorAll('[data-cart-line]').length) {
-            window.location.reload();
-        }
     }
 
     function readQuantity(itemId) {
@@ -153,89 +169,65 @@
         return input ? parseInt(input.value, 10) || 0 : 0;
     }
 
-    function setBusy(button, busy) {
-        if (button) {
-            button.disabled = busy;
-        }
+    /**
+     * A button may name a quantity input via data-qty-source; only look it up
+     * when it is set, since querySelector('') would throw.
+     */
+    function quantityFieldOf(button) {
+        var selector = button.getAttribute('data-qty-source');
+
+        return selector ? document.querySelector(selector) : null;
     }
 
-    /**
-     * A button may name a quantity input via data-qty-source; the menu cards do
-     * not, and querySelector('') would throw, so only look it up when it is set.
-     */
-    function quantityFrom(button) {
-        var selector = button.getAttribute('data-qty-source');
-        var field = selector ? document.querySelector(selector) : null;
+    function send(control, payload, onSuccess) {
+        setBusy(control, true);
 
-        return field ? parseInt(field.value, 10) || 1 : 1;
+        request(control.getAttribute('data-url'), payload)
+            .then(onSuccess)
+            .catch(function (error) {
+                toast(error.message, 'danger');
+            })
+            .finally(function () {
+                setBusy(control, false);
+            });
     }
 
     function handleAdd(button) {
-        var quantity = quantityFrom(button);
+        var field = quantityFieldOf(button);
 
-        setBusy(button, true);
-
-        request(button.getAttribute('data-url'), {
+        send(button, {
             id: parseInt(button.getAttribute('data-item-id'), 10),
-            qty: quantity
-        })
-            .then(function (data) {
-                updateBadge(data.cart_quantity);
-                toast(data.message, 'success');
-            })
-            .catch(function (error) {
-                toast(error.message, 'danger');
-            })
-            .finally(function () {
-                setBusy(button, false);
-            });
+            qty: field ? parseInt(field.value, 10) || 1 : 1
+        }, function (data) {
+            renderOrderBar(data, { open: true, itemId: parseInt(button.getAttribute('data-item-id'), 10) });
+            toast(data.message, 'success');
+
+            if (field) {
+                field.value = 1;
+            }
+        });
     }
 
-    function handleQuantityChange(button, itemId, quantity) {
-        if (quantity <= 0) {
-            if (!window.confirm('Hapus item ini dari keranjang?')) {
-                return;
-            }
-        }
+    function handleQuantityChange(control, itemId, quantity) {
+        send(control, { id: itemId, qty: quantity }, function (data) {
+            renderOrderBar(data);
+        });
+    }
 
-        setBusy(button, true);
-
-        request(button.getAttribute('data-url'), { id: itemId, qty: quantity })
-            .then(function (data) {
-                updateBadge(data.cart_quantity);
-                updateSummary(data.totals);
-                updateLine(itemId, quantity);
-            })
-            .catch(function (error) {
-                toast(error.message, 'danger');
-            })
-            .finally(function () {
-                setBusy(button, false);
-            });
+    function handleNoteChange(input) {
+        send(input, {
+            id: parseInt(input.getAttribute('data-item-id'), 10),
+            note: input.value
+        }, function (data) {
+            renderOrderBar(data);
+        });
     }
 
     function handleRemove(button) {
-        if (!window.confirm('Apakah Anda yakin ingin menghapus item ini?')) {
-            return;
-        }
-
-        var itemId = parseInt(button.getAttribute('data-item-id'), 10);
-
-        setBusy(button, true);
-
-        request(button.getAttribute('data-url'), { id: itemId })
-            .then(function (data) {
-                updateBadge(data.cart_quantity);
-                updateSummary(data.totals);
-                updateLine(itemId, 0);
-                toast(data.message, 'success');
-            })
-            .catch(function (error) {
-                toast(error.message, 'danger');
-            })
-            .finally(function () {
-                setBusy(button, false);
-            });
+        send(button, { id: parseInt(button.getAttribute('data-item-id'), 10) }, function (data) {
+            renderOrderBar(data);
+            toast(data.message, 'success');
+        });
     }
 
     document.addEventListener('click', function (event) {
@@ -247,8 +239,8 @@
             return;
         }
 
-        // Menu card stepper: only adjusts the local field, the cart is untouched
-        // until "Tambah Keranjang" reads it through data-qty-source.
+        // Menu card stepper: only adjusts the local field, the order is
+        // untouched until "Tambah Pesanan" reads it through data-qty-source.
         var qtyStep = event.target.closest('[data-qty-step]');
 
         if (qtyStep) {
@@ -259,13 +251,21 @@
             return;
         }
 
+        var toggle = event.target.closest('[data-order-bar-toggle]');
+
+        if (toggle) {
+            event.preventDefault();
+            setOpen(!orderBar().classList.contains('is-open'));
+            return;
+        }
+
         var step = event.target.closest('[data-cart-step]');
 
         if (step) {
             event.preventDefault();
             var stepId = parseInt(step.getAttribute('data-item-id'), 10);
             var delta = parseInt(step.getAttribute('data-cart-step'), 10);
-            handleQuantityChange(step, stepId, readQuantity(stepId) + delta);
+            handleQuantityChange(step, stepId, Math.min(99, readQuantity(stepId) + delta));
             return;
         }
 
@@ -278,6 +278,13 @@
     });
 
     document.addEventListener('change', function (event) {
+        var note = event.target.closest('[data-cart-note]');
+
+        if (note) {
+            handleNoteChange(note);
+            return;
+        }
+
         var input = event.target.closest('[data-qty-input]');
 
         if (!input) {
@@ -294,5 +301,22 @@
         }
 
         handleQuantityChange(input, itemId, Math.min(99, Math.max(0, quantity)));
+    });
+
+    // Lines reflow when the screen width changes, so measure them again.
+    window.addEventListener('resize', function () {
+        var bar = orderBar();
+
+        if (bar) {
+            fitListToTwoLines(bar);
+        }
+    });
+
+    // Enter in a message field saves it instead of doing nothing.
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' && event.target.matches('[data-cart-note]')) {
+            event.preventDefault();
+            event.target.blur();
+        }
     });
 })();

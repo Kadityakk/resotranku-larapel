@@ -52,7 +52,12 @@
                         <ul class="list-unstyled small mb-3 flex-grow-1">
                             @foreach ($order->orderItems as $orderItem)
                                 <li class="d-flex justify-content-between">
-                                    <span>{{ $orderItem->item?->name ?? 'Menu' }} &times; {{ $orderItem->quantity }}</span>
+                                    <span>
+                                        {{ $orderItem->item?->name ?? 'Menu' }} &times; {{ $orderItem->quantity }}
+                                        @if ($orderItem->note)
+                                            <small class="d-block text-body-secondary fst-italic">{{ $orderItem->note }}</small>
+                                        @endif
+                                    </span>
                                     <span><x-rupiah :value="$orderItem->total_price" /></span>
                                 </li>
                             @endforeach

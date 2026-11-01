@@ -15,7 +15,6 @@ it('renders every guest page', function (string $url) {
     'menu' => '/menu',
     'menu with table' => '/menu?meja=3',
     'menu filtered' => '/menu?q=nasi',
-    'cart' => '/cart',
     'login' => '/login',
     'register' => '/register',
     'forgot password' => '/forgot-password',

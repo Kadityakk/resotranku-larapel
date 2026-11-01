@@ -2,7 +2,7 @@
             <div class="container py-5">
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 pb-4 mb-4 rk-footer__top">
                     <a href="{{ route('menu') }}">
-                        <span class="rk-brand rk-brand--light"><i class="fas fa-leaf"></i> Restoranku</span>
+                        <span class="rk-brand rk-brand--light">Sushiomai</span>
                         <p class="mb-0 mt-1">Pilihan Lezat di Ujung Jari Anda!</p>
                     </a>
                     <div class="d-flex gap-2">
@@ -19,9 +19,9 @@
                     </div>
                     <div class="col-lg-4 col-md-6">
                         <h4 class="mb-3">Hubungi Kami</h4>
-                        <p>Alamat: Jl. Sangkuriang No.8, Padasuka, Kec. Cimahi Tengah, Kota Cimahi, Jawa Barat 40526</p>
-                        <p>Email: info@codepolitan.com</p>
-                        <p class="mb-0">Telp: 0899-9488-990</p>
+                        <p>Alamat: Jl. Gn Soputan, Denpasar, Bali</p>
+                        <p>Email: info@sushiomai.com</p>
+                        <p class="mb-0">Telp: 0812-345-6789</p>
                     </div>
                     <div class="col-lg-4 col-md-6">
                         <h4 class="mb-3">Metode Pembayaran</h4>
@@ -35,7 +35,7 @@
             <!-- Copyright Start -->
             <div class="rk-footer__copy">
                 <div class="container d-flex flex-wrap justify-content-between gap-2 py-4">
-                    <span><i class="fas fa-copyright me-1"></i>Restoranku <span id="currentYear"></span>. All right reserved.</span>
+                    <span><i class="fas fa-copyright me-1"></i>Sushiomai <span id="currentYear"></span>. All right reserved.</span>
                     <!--/*** This template is free as long as you keep the below author’s credit link/attribution link/backlink. ***/-->
                     <!--/*** If you'd like to use the template without the below author’s credit link/attribution link/backlink, ***/-->
                     <!--/*** you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". ***/-->

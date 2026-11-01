@@ -2,13 +2,12 @@
 
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
-use App\Models\Item;
 use Database\Seeders\CategorySeeder;
 
 /**
  * The customer template ships Bootstrap 5.0, which is older than several
  * utilities used in the markup. A class that version does not define renders as
- * nothing - the cart badge became white text on no background - and no
+ * nothing - a badge once became white text on no background - and no
  * server-side assertion can see it. So the stylesheet contract is checked here.
  */
 beforeEach(function () {
@@ -54,7 +53,7 @@ it('defines every text-bg utility the customer pages ask for', function () {
     }
 });
 
-it('gives the cart badge a background so it is not white on white', function () {
+it('gives primary badges a background so they are not white on white', function () {
     expect($this->customCss)->toMatch('/\.text-bg-primary\s*\{[^}]*background-color/s');
 });
 
@@ -64,14 +63,7 @@ it('still needs the backfill, proving the guard is meaningful', function () {
     expect($this->customerBootstrap)->not->toContain('.text-bg-primary');
 });
 
-it('positions the cart badge over the bag icon', function () {
-    $this->seed(CategorySeeder::class);
-    Item::factory()->create();
-
-    $html = $this->get(route('menu'))->assertOk()->getContent();
-
-    // The badge is absolutely positioned, so its anchor must establish a
-    // containing block.
-    expect($html)->toMatch('/position-relative[^>]*>\s*<i class="fa fa-shopping-bag/s')
-        ->and($this->customCss)->toMatch('/\.cart-badge\s*\{[^}]*position:\s*absolute/s');
+it('keeps the order bar fixed to the bottom and clear of the page content', function () {
+    expect($this->customCss)->toMatch('/\.rk-orderbar\s*\{[^}]*position:\s*fixed/s')
+        ->and($this->customCss)->toContain('body:has(.rk-orderbar:not(.is-empty))');
 });

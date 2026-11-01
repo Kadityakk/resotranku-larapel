@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\File;
 
 /**
  * public/assets/customer/js/cart.js finds everything it needs through data
- * attributes. If Blade stops rendering one of them the cart silently stops
+ * attributes. If Blade stops rendering one of them the order bar silently stops
  * working in the browser while every server-side test still passes, so the
  * contract between the two is asserted here.
  */
@@ -22,7 +22,8 @@ it('loads the cart script and stylesheet on customer pages', function () {
         ->assertSee('assets/customer/css/custom.css', false)
         ->assertSee('name="csrf-token"', false)
         ->assertSee('id="toast-stack"', false)
-        ->assertSee('id="cart-badge"', false);
+        ->assertSee('data-order-bar', false)
+        ->assertSee('data-order-bar-body', false);
 });
 
 it('keeps css out of the blade templates', function () {
@@ -36,27 +37,7 @@ it('keeps css out of the blade templates', function () {
     expect($offenders)->toBeEmpty();
 });
 
-it('hides the cart badge while the cart is empty', function () {
-    $html = $this->get(route('menu'))->assertOk()->getContent();
-
-    expect($html)->toMatch('/id="cart-badge"[^>]*\bd-none\b/s');
-});
-
-it('shows the cart badge with the total quantity once items are added', function () {
-    $first = Item::factory()->create();
-    $second = Item::factory()->create();
-
-    $this->postJson(route('cart.add'), ['id' => $first->id, 'qty' => 2]);
-    $this->postJson(route('cart.add'), ['id' => $second->id, 'qty' => 3]);
-
-    $html = $this->get(route('menu'))->assertOk()->getContent();
-
-    expect($html)
-        ->not->toMatch('/id="cart-badge"[^>]*\bd-none\b/s')
-        ->toMatch('/id="cart-badge".*?>\s*5\s*</s');
-});
-
-it('reports the running cart quantity in every cart response', function () {
+it('reports the running quantity in every order response', function () {
     $item = Item::factory()->create();
 
     $this->postJson(route('cart.add'), ['id' => $item->id, 'qty' => 2])
@@ -72,20 +53,19 @@ it('reports the running cart quantity in every cart response', function () {
         ->assertJsonPath('cart_quantity', 0);
 });
 
-it('shows the badge on every page that carries the navbar', function (string $routeName) {
-    $item = Item::factory()->create();
-    $this->postJson(route('cart.add'), ['id' => $item->id, 'qty' => 4]);
+it('no longer links to a cart page from the navbar', function () {
+    $this->get(route('menu'))
+        ->assertOk()
+        ->assertDontSee('id="cart-badge"', false)
+        ->assertDontSee('fa-shopping-bag', false);
+});
 
-    $html = $this->get(route($routeName))->assertOk()->getContent();
-
-    expect($html)->toMatch('/id="cart-badge".*?>\s*4\s*</s');
-})->with(['menu', 'cart', 'checkout']);
-
-it('ships the badge animation the script triggers', function () {
+it('ships the order bar animation the script triggers', function () {
     $css = file_get_contents(public_path('assets/customer/css/custom.css'));
 
-    expect($css)->toContain('.cart-badge.is-bumped')
+    expect($css)->toContain('.rk-orderbar.is-bumped')
         ->and($css)->toContain('@keyframes rk-badge-pop')
+        ->and($css)->toContain('.rk-orderbar.is-open .rk-orderbar__panel')
         ->and($this->cartJs)->toContain("classList.add('is-bumped')");
 });
 
@@ -112,43 +92,30 @@ it('only queries a quantity source when one is actually set', function () {
     expect($this->cartJs)->not->toContain("getAttribute('data-qty-source') || ''");
 });
 
-it('renders cart rows carrying the attributes the script reads', function () {
+it('renders order bar rows carrying the attributes the script reads', function () {
     $item = Item::factory()->create(['price' => 25000]);
     $this->postJson(route('cart.add'), ['id' => $item->id, 'qty' => 2]);
 
-    $html = $this->get(route('cart'))->assertOk()->getContent();
+    $html = $this->get(route('menu'))->assertOk()->getContent();
 
     expect($html)
         ->toContain('data-cart-line="'.$item->id.'"')
-        ->toContain('data-price="'.$item->price.'"')
         ->toContain('data-qty-input')
-        ->toContain('data-line-total')
         ->toContain('data-cart-step="-1"')
         ->toContain('data-cart-step="1"')
         ->toContain('data-cart-remove')
+        ->toContain('data-cart-note')
+        ->toContain('data-order-bar-toggle')
         ->toContain('data-url="'.route('cart.update').'"')
-        ->toContain('data-url="'.route('cart.remove').'"');
-});
-
-it('renders the summary targets the script rewrites after each change', function () {
-    $item = Item::factory()->create();
-    $this->postJson(route('cart.add'), ['id' => $item->id]);
-
-    $html = $this->get(route('cart'))->assertOk()->getContent();
-
-    expect($html)
-        ->toContain('data-summary-subtotal')
-        ->toContain('data-summary-tax')
-        ->toContain('data-summary-total');
+        ->toContain('data-url="'.route('cart.remove').'"')
+        ->toContain('href="'.route('checkout').'"');
 });
 
 it('keeps every selector the script looks up present in the markup it runs against', function () {
     $item = Item::factory()->create();
     $this->postJson(route('cart.add'), ['id' => $item->id]);
 
-    $cartPage = $this->get(route('cart'))->assertOk()->getContent();
     $menuPage = $this->get(route('menu'))->assertOk()->getContent();
-    $combined = $cartPage.$menuPage;
 
     preg_match_all('/\[data-[a-z-]+/', $this->cartJs, $matches);
 
@@ -160,6 +127,6 @@ it('keeps every selector the script looks up present in the markup it runs again
     expect($selectors)->not->toBeEmpty();
 
     foreach ($selectors as $selector) {
-        expect($combined)->toContain($selector);
+        expect($menuPage)->toContain($selector);
     }
 });

@@ -74,6 +74,9 @@
                                     <li>
                                         <span class="fw-semibold">{{ $orderItem->quantity }}&times;</span>
                                         {{ $orderItem->item?->name ?? 'Menu' }}
+                                        @if ($orderItem->note)
+                                            <span class="d-block text-danger fst-italic ms-3">{{ $orderItem->note }}</span>
+                                        @endif
                                     </li>
                                 @endforeach
                             </ul>

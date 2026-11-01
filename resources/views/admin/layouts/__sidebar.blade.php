@@ -4,7 +4,7 @@
 
 <aside class="rk-sidebar">
     <div class="rk-sidebar__brand">
-        <h1>Restoranku</h1>
+        <h1>Sushiomai</h1>
         <small>{{ $user?->role?->role_name ?? 'Staf' }} panel</small>
     </div>
 

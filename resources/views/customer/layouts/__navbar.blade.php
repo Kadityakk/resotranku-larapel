@@ -8,7 +8,7 @@
     <div class="container">
         <nav class="navbar navbar-light navbar-expand-lg py-3">
             <a href="{{ route('menu') }}" class="navbar-brand rk-brand">
-                <i class="fas fa-leaf"></i> Restoranku
+                Sushiomai
             </a>
 
             <div class="d-flex align-items-center gap-3 order-lg-last ms-auto ms-lg-0">
@@ -17,13 +17,6 @@
                         <i class="fa fa-chair me-1"></i> Meja {{ $tableNumber }}
                     </span>
                 @endif
-                <a href="{{ route('cart') }}" class="rk-icon-btn position-relative" aria-label="Keranjang">
-                    <i class="fa fa-shopping-bag"></i>
-                    <span id="cart-badge"
-                          class="badge rounded-pill cart-badge {{ ($cartQuantity ?? 0) > 0 ? '' : 'd-none' }}">
-                        {{ $cartQuantity ?? 0 }}
-                    </span>
-                </a>
                 <button class="navbar-toggler border-0 px-2" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarCollapse" aria-label="Buka navigasi">
                     <span class="fa fa-bars"></span>
@@ -33,7 +26,6 @@
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <div class="navbar-nav mx-auto gap-lg-5">
                     <a href="{{ route('menu') }}" class="nav-item nav-link {{ request()->routeIs('menu') ? 'active' : '' }}">Menu</a>
-                    <a href="{{ route('cart') }}" class="nav-item nav-link {{ request()->routeIs('cart') ? 'active' : '' }}">Keranjang</a>
                     @auth
                         <a href="{{ route('dashboard') }}" class="nav-item nav-link">Dasbor Staf</a>
                     @endauth

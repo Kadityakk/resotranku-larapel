@@ -23,12 +23,11 @@ Route::get('/', fn () => redirect()->route('menu'));
 
 Route::get('/menu', [MenuController::class, 'index'])->name('menu');
 
+// The order bar on the menu page drives these; there is no separate cart page.
 Route::controller(MenuController::class)->group(function () {
-    Route::get('/cart', 'cart')->name('cart');
     Route::post('/cart/add', 'addToCart')->name('cart.add');
     Route::post('/cart/update', 'updateCart')->name('cart.update');
     Route::post('/cart/remove', 'removeFromCart')->name('cart.remove');
-    Route::delete('/cart', 'clearCart')->name('cart.clear');
 
     Route::get('/checkout', 'checkout')->name('checkout');
     Route::post('/checkout', 'placeOrder')->name('checkout.store');

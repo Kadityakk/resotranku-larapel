@@ -100,36 +100,87 @@ it('reports an error when removing a line that is not in the cart', function () 
         ->assertJson(['success' => false]);
 });
 
-it('empties the whole cart', function () {
-    $items = Item::factory()->count(3)->create();
-
-    foreach ($items as $item) {
-        $this->postJson(route('cart.add'), ['id' => $item->id]);
-    }
-
-    $this->delete(route('cart.clear'))
-        ->assertRedirect(route('cart'))
-        ->assertSessionHas('success');
-
-    expect(session('cart'))->toBeNull();
+it('no longer has a separate cart page', function () {
+    $this->get('/cart')->assertNotFound();
 });
 
-it('shows the cart page with computed totals', function () {
+it('shows the picked menus in the order bar with computed totals', function () {
     $item = Item::factory()->create(['price' => 30000]);
     $this->postJson(route('cart.add'), ['id' => $item->id, 'qty' => 2]);
 
-    $this->get(route('cart'))
+    $this->get(route('menu'))
         ->assertOk()
-        ->assertSee($item->name)
+        ->assertSee('id="order-bar"', false)
+        ->assertSee('data-cart-line="'.$item->id.'"', false)
         ->assertSee('Rp60.000')
         ->assertSee('Rp6.000')
         ->assertSee('Rp66.000');
 });
 
-it('shows an empty state when the cart has no items', function () {
-    $this->get(route('cart'))
+it('hides the order bar while nothing is picked', function () {
+    $html = $this->get(route('menu'))->assertOk()->getContent();
+
+    expect($html)->toMatch('/id="order-bar"[^>]*\bis-empty\b/s')
+        ->not->toContain('data-cart-line');
+});
+
+it('returns the re-rendered order bar after every change', function () {
+    $item = Item::factory()->create(['price' => 15000]);
+
+    $this->postJson(route('cart.add'), ['id' => $item->id, 'qty' => 2])
         ->assertOk()
-        ->assertSee('Keranjang Anda masih kosong');
+        ->assertJsonPath('order_bar', fn (string $html) => str_contains($html, 'data-cart-line="'.$item->id.'"')
+            && str_contains($html, 'Rp30.000'));
+});
+
+it('stores a message for a picked menu', function () {
+    $item = Item::factory()->create();
+    $this->postJson(route('cart.add'), ['id' => $item->id]);
+
+    $this->postJson(route('cart.update'), ['id' => $item->id, 'note' => '  tanpa wasabi '])
+        ->assertOk()
+        ->assertJsonPath('order_bar', fn (string $html) => str_contains($html, 'value="tanpa wasabi"'));
+
+    expect(session('cart')[$item->id]['note'])->toBe('tanpa wasabi')
+        ->and(session('cart')[$item->id]['qty'])->toBe(1);
+});
+
+it('clears the message when it is emptied', function () {
+    $item = Item::factory()->create();
+    $this->postJson(route('cart.add'), ['id' => $item->id]);
+    $this->postJson(route('cart.update'), ['id' => $item->id, 'note' => 'pedas']);
+
+    $this->postJson(route('cart.update'), ['id' => $item->id, 'note' => ''])->assertOk();
+
+    expect(session('cart')[$item->id]['note'])->toBeNull();
+});
+
+it('keeps the message when the same menu is added again', function () {
+    $item = Item::factory()->create();
+    $this->postJson(route('cart.add'), ['id' => $item->id]);
+    $this->postJson(route('cart.update'), ['id' => $item->id, 'note' => 'pedas']);
+
+    $this->postJson(route('cart.add'), ['id' => $item->id]);
+
+    expect(session('cart')[$item->id])->toMatchArray(['qty' => 2, 'note' => 'pedas']);
+});
+
+it('rejects an update with neither a quantity nor a message', function () {
+    $item = Item::factory()->create();
+    $this->postJson(route('cart.add'), ['id' => $item->id]);
+
+    $this->postJson(route('cart.update'), ['id' => $item->id])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors('qty');
+});
+
+it('rejects a message that is too long', function () {
+    $item = Item::factory()->create();
+    $this->postJson(route('cart.add'), ['id' => $item->id]);
+
+    $this->postJson(route('cart.update'), ['id' => $item->id, 'note' => str_repeat('a', 256)])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors('note');
 });
 
 it('rounds tax per line so the cart and the order never disagree', function () {

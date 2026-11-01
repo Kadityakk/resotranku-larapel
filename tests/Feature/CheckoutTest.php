@@ -97,6 +97,18 @@ it('stores one order item per cart line', function () {
         ->and($orderItem->total_price)->toBe(44000);
 });
 
+it('stores the message written for each menu', function () {
+    $item = Item::factory()->create();
+    $this->postJson(route('cart.add'), ['id' => $item->id]);
+    $this->postJson(route('cart.update'), ['id' => $item->id, 'note' => 'tanpa wasabi']);
+
+    $this->get(route('checkout'))->assertOk()->assertSee('tanpa wasabi');
+
+    $this->post(route('checkout.store'), checkoutPayload());
+
+    expect(Order::with('orderItems')->sole()->orderItems->first()->note)->toBe('tanpa wasabi');
+});
+
 it('empties the cart once the order is stored', function () {
     $item = Item::factory()->create();
     $this->postJson(route('cart.add'), ['id' => $item->id]);

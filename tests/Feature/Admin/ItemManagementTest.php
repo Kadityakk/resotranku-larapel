@@ -69,6 +69,18 @@ it('stores an uploaded image under a generated name', function () {
     Storage::disk('public')->assertExists($item->img);
 });
 
+it('accepts every supported image format', function (string $fileName) {
+    Storage::fake('public');
+
+    $this->actingAs($this->admin)
+        ->post(route('admin.items.store'), itemPayload($this->category, [
+            'img' => UploadedFile::fake()->image($fileName),
+        ]))
+        ->assertSessionHasNoErrors();
+
+    Storage::disk('public')->assertExists(Item::sole()->img);
+})->with(['menu.jpg', 'menu.jpeg', 'menu.png', 'menu.webp']);
+
 it('rejects a file that is not an image', function () {
     Storage::fake('public');
 

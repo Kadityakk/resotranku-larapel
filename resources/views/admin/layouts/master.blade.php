@@ -14,7 +14,7 @@
         </main>
 
         <footer class="rk-footer d-flex justify-content-between flex-wrap gap-2">
-            <span>&copy; {{ now()->year }} Restoranku. Semua hak dilindungi.</span>
+            <span>&copy; {{ now()->year }} Sushiomai. Semua hak dilindungi.</span>
             <span>Masuk sebagai <strong>{{ auth()->user()?->username }}</strong></span>
         </footer>
     </div>

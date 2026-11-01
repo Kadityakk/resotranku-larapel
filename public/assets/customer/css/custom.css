@@ -1,5 +1,5 @@
 /**
- * Restoranku customer overrides, layered on top of the purchased template's
+ * Sushiomai customer overrides, layered on top of the purchased template's
  * style.css. Kept out of the Blade templates so markup stays free of CSS.
  *
  * The look is a warm cream page, deep green ink and a yellow accent. The
@@ -392,7 +392,7 @@ a:hover {
 .rk-splash__track {
     display: flex;
     width: max-content;
-    animation: rk-splash-slide 34s linear infinite;
+    animation: rk-splash-slide 68s linear infinite;
 }
 
 .rk-splash:hover .rk-splash__track,
@@ -420,9 +420,10 @@ a:hover {
 .rk-splash__item {
     position: relative;
     display: block;
-    flex: 0 0 clamp(14rem, 30vw, 21rem);
+    /* As wide as two 4:3 tiles side by side (plus the gap), at one tile's height. */
+    flex: 0 0 min(calc(2 * clamp(14rem, 30vw, 21rem) + 1rem), 88vw);
+    height: calc(clamp(14rem, 30vw, 21rem) * .75);
     overflow: hidden;
-    aspect-ratio: 4 / 3;
     border-radius: var(--rk-radius);
     background-color: var(--rk-card);
     text-decoration: none;
@@ -842,23 +843,247 @@ a:hover {
     background-color: var(--rk-green) !important;
 }
 
-/* Cart badge ----------------------------------------------------------- */
+/* Order bar ------------------------------------------------------------ */
 
-.cart-badge {
-    position: absolute;
-    top: -6px;
-    right: -8px;
-    min-width: 18px;
-    font-size: .65rem;
-    line-height: 1.1;
-    padding: .3em .45em;
-    color: var(--rk-green);
-    background-color: var(--rk-yellow);
-    box-shadow: 0 0 0 2px var(--rk-cream);
+/**
+ * Picked menus collect in a bar fixed to the bottom of the menu page. The
+ * summary row is always visible; the panel with every line, its quantity,
+ * price and message opens above it.
+ */
+.rk-orderbar {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 1030;
+    padding: 0 .75rem .75rem;
+    pointer-events: none;
+    transition: transform .35s cubic-bezier(.2, .8, .2, 1);
+}
+
+.rk-orderbar.is-empty {
+    transform: translateY(110%);
+}
+
+.rk-orderbar > .container {
+    max-width: 46rem;
+    padding: 0;
+    overflow: hidden;
+    border-radius: var(--rk-radius);
+    background-color: var(--rk-cream);
+    box-shadow: 0 -4px 30px rgba(15, 61, 46, .28);
+    pointer-events: auto;
+}
+
+/* Leave room so the bar never covers the last menu cards or the footer. */
+body:has(.rk-orderbar:not(.is-empty)) {
+    padding-bottom: 6rem;
+}
+
+body:has(.rk-orderbar:not(.is-empty)) .back-to-top {
+    bottom: 6.5rem;
+}
+
+.rk-orderbar__panel {
+    display: none;
+    padding: .25rem 1rem 0;
+}
+
+.rk-orderbar.is-open .rk-orderbar__panel {
+    display: block;
 }
 
 /**
- * cart.js adds .is-bumped whenever the count changes, so adding an item reads
+ * The panel never grows past two lines; from the third menu on the list
+ * scrolls inside itself instead of piling up over the page. cart.js measures
+ * the first two lines into --rk-orderbar-list-max; the fallback is close to
+ * two lines with a message field each.
+ */
+.rk-orderbar__list {
+    max-height: var(--rk-orderbar-list-max, 13.5rem);
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    list-style: none;
+}
+
+.rk-orderbar__line {
+    display: flex;
+    gap: .75rem;
+    align-items: flex-start;
+    padding: .75rem 0;
+    border-bottom: 1px solid var(--rk-line);
+}
+
+.rk-orderbar__thumb {
+    flex: 0 0 3.5rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.rk-orderbar__info {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.rk-orderbar__name {
+    font-weight: 600;
+    color: var(--rk-green);
+    line-height: 1.25;
+}
+
+.rk-orderbar__unit {
+    display: block;
+    font-size: .82rem;
+    color: var(--rk-muted);
+}
+
+.rk-orderbar__note {
+    width: 100%;
+    margin-top: .4rem;
+    padding: .3rem .65rem;
+    border: 1.5px dashed var(--rk-line);
+    border-radius: 10px;
+    background-color: #fffdf8;
+    font-size: .85rem;
+    color: var(--rk-ink);
+}
+
+.rk-orderbar__note:focus {
+    outline: none;
+    border-style: solid;
+    border-color: var(--rk-green);
+}
+
+.rk-orderbar__side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: .35rem;
+}
+
+.rk-stepper--sm {
+    padding: 0 .2rem;
+}
+
+.rk-stepper--sm button {
+    width: 1.6rem;
+    height: 1.6rem;
+    font-size: .7rem;
+}
+
+.rk-stepper--sm input {
+    width: 2rem;
+    font-size: .9rem;
+}
+
+.rk-orderbar__total {
+    font-weight: 700;
+    color: var(--rk-green);
+}
+
+.rk-orderbar__remove {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: .8rem;
+    color: var(--rk-muted);
+}
+
+.rk-orderbar__remove:hover {
+    color: #b42318;
+}
+
+.rk-orderbar__sums {
+    margin: 0;
+    padding: .6rem 0;
+    font-size: .88rem;
+    color: var(--rk-muted);
+}
+
+.rk-orderbar__sums div {
+    display: flex;
+    justify-content: space-between;
+}
+
+.rk-orderbar__sums dd {
+    margin: 0;
+}
+
+.rk-orderbar__summary {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .75rem;
+    background-color: var(--rk-green);
+}
+
+.rk-orderbar__toggle {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: .65rem;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #fff;
+    text-align: left;
+}
+
+.rk-orderbar__count {
+    display: grid;
+    place-items: center;
+    min-width: 2.2rem;
+    height: 2.2rem;
+    padding: 0 .4rem;
+    border-radius: 999px;
+    background-color: var(--rk-yellow);
+    color: var(--rk-green);
+    font-weight: 800;
+}
+
+.rk-orderbar__label {
+    display: flex;
+    flex-direction: column;
+    font-size: .8rem;
+    line-height: 1.2;
+    opacity: .9;
+}
+
+.rk-orderbar__grand {
+    font-size: 1.05rem;
+    font-weight: 700;
+    opacity: 1;
+}
+
+.rk-orderbar__chevron {
+    transition: transform .25s ease;
+}
+
+.rk-orderbar.is-open .rk-orderbar__chevron {
+    transform: rotate(180deg);
+}
+
+.rk-orderbar__checkout {
+    flex: 0 0 auto;
+    padding: .6rem 1.1rem;
+    border-radius: 999px;
+    background-color: var(--rk-yellow);
+    color: var(--rk-green);
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.rk-orderbar__checkout:hover {
+    background-color: #fff;
+    color: var(--rk-green);
+}
+
+/**
+ * cart.js adds .is-bumped whenever the order changes, so picking a menu reads
  * as a notification rather than a silent number swap.
  */
 @keyframes rk-badge-pop {
@@ -867,7 +1092,7 @@ a:hover {
     }
 
     35% {
-        transform: scale(1.55);
+        transform: scale(1.4);
     }
 
     70% {
@@ -879,12 +1104,27 @@ a:hover {
     }
 }
 
-.cart-badge.is-bumped {
+.rk-orderbar.is-bumped .rk-orderbar__count {
     animation: rk-badge-pop .45s cubic-bezier(.34, 1.56, .64, 1);
 }
 
+@media (max-width: 575.98px) {
+    .rk-orderbar {
+        padding: 0;
+    }
+
+    .rk-orderbar > .container {
+        border-radius: var(--rk-radius) var(--rk-radius) 0 0;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .cart-badge.is-bumped {
+    .rk-orderbar,
+    .rk-orderbar__chevron {
+        transition: none;
+    }
+
+    .rk-orderbar.is-bumped .rk-orderbar__count {
         animation: none;
     }
 }

@@ -17,7 +17,14 @@
                 @foreach ($order->orderItems as $orderItem)
                     <li class="list-group-item d-flex align-items-center gap-3">
                         <span class="badge rounded-pill text-bg-primary fs-6">{{ $orderItem->quantity }}&times;</span>
-                        <span class="flex-grow-1">{{ $orderItem->item?->name ?? 'Menu telah dihapus' }}</span>
+                        <span class="flex-grow-1">
+                            {{ $orderItem->item?->name ?? 'Menu telah dihapus' }}
+                            @if ($orderItem->note)
+                                <small class="d-block text-danger fst-italic">
+                                    <i class="fas fa-comment-dots me-1"></i>{{ $orderItem->note }}
+                                </small>
+                            @endif
+                        </span>
                     </li>
                 @endforeach
             </ul>

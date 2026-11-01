@@ -13,7 +13,7 @@ class CreateOrderAction
     public function __construct(private readonly CartService $cart) {}
 
     /**
-     * Turns the session cart into a stored order. Prices and availability are
+     * Turns the menus picked in the order bar into a stored order. Prices and availability are
      * re-read from the database so a stale cart can never set the amount a
      * customer is charged.
      *
@@ -27,7 +27,7 @@ class CreateOrderAction
 
         if ($lines === []) {
             throw ValidationException::withMessages([
-                'cart' => 'Keranjang kosong. Silakan tambahkan menu sebelum checkout.',
+                'cart' => 'Belum ada menu yang dipilih. Silakan pilih menu terlebih dahulu.',
             ]);
         }
 
@@ -36,7 +36,7 @@ class CreateOrderAction
 
         if ($unavailable !== []) {
             throw ValidationException::withMessages([
-                'cart' => 'Beberapa menu di keranjang sudah tidak tersedia. Silakan periksa kembali keranjang Anda.',
+                'cart' => 'Beberapa menu yang Anda pilih sudah tidak tersedia. Silakan periksa kembali pesanan Anda.',
             ]);
         }
 
@@ -69,6 +69,7 @@ class CreateOrderAction
                     'price' => $item->price,
                     'tax' => $lineTax,
                     'total_price' => $lineSubtotal + $lineTax,
+                    'note' => $line['note'] ?? null,
                 ]);
 
                 $subtotal += $lineSubtotal;

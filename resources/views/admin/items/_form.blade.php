@@ -52,12 +52,12 @@
             <img src="{{ $isEdit ? $item->imageUrl() : '' }}" id="img-preview"
                  class="rk-thumb w-100 mb-3 {{ $isEdit && $item->img ? '' : 'd-none' }}"
                  style="height: 180px;" alt="Pratinjau gambar">
-            <input type="file" id="img" name="img" accept="image/jpeg,image/png,image/webp"
+            <input type="file" id="img" name="img" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
                    class="form-control @error('img') is-invalid @enderror"
                    data-image-input data-image-preview="#img-preview">
             @error('img')<div class="invalid-feedback">{{ $message }}</div>@enderror
             <small class="text-body-secondary d-block mt-2">
-                JPG, PNG atau WEBP, maksimal 2 MB.
+                JPG, JPEG, PNG atau WEBP, maksimal 2 MB.
                 @if ($isEdit)
                     Biarkan kosong untuk mempertahankan gambar saat ini.
                 @endif

@@ -93,7 +93,14 @@
                                                      style="width: 80px; height: 72px; object-fit: cover;"
                                                      alt="{{ $item['name'] }}">
                                             </th>
-                                            <td>{{ $item['name'] }}</td>
+                                            <td>
+                                                {{ $item['name'] }}
+                                                @if (filled($item['note'] ?? null))
+                                                    <small class="d-block text-body-secondary">
+                                                        <i class="fa fa-comment-dots me-1"></i>{{ $item['note'] }}
+                                                    </small>
+                                                @endif
+                                            </td>
                                             <td><x-rupiah :value="$item['price']" /></td>
                                             <td>{{ $item['qty'] }}</td>
                                             <td><x-rupiah :value="$item['price'] * $item['qty']" /></td>
@@ -101,8 +108,8 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            <a href="{{ route('cart') }}" class="btn btn-sm border-secondary text-primary">
-                                <i class="fa fa-pen me-1"></i> Ubah keranjang
+                            <a href="{{ route('menu') }}" class="btn btn-sm border-secondary text-primary">
+                                <i class="fa fa-pen me-1"></i> Ubah pesanan
                             </a>
                         </div>
                     </div>
